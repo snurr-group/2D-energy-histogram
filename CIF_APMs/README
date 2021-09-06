@@ -1,5 +1,0 @@
-This folder contains CIF files for amorphous porous materials (APMs) used in this work. 
-
-Some other useful files are also included here:
-1. Force field file (force_field_mixing_rules.def) that can be used in RASPA2 software for grand canonical Monte Carlo simulation.
-2. Textural properies for APMs (textprop_apm.csv). 
