@@ -4,9 +4,8 @@ R implementation of machine learning using 2D energy histogram features for pred
 ![Workflow to construct 2D energy histogram features](https://github.com/snurr-group/2D-energy-histogram/blob/main/feature_engineering_scheme.jpg)
 
 
-## Requirement
-1). gfortran compiler <br/>
-2) [libgmxfort](https://github.com/KaihangShi/libgmxfort) for reading GROMACS compressed trajectory files (.xtc)<br/>
+## Files
+This repo contains R and python code to reproduce the results in the paper. 
 
 ## Usage
 ### Compilation
