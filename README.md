@@ -1,7 +1,7 @@
 # 2D-energy-histogram
 R implementation of machine learning using 2D energy histogram features for prediction of adsorption.<br/>
 
-![Normal and tangential pressure profile in a hard-sphere critical nucleus](https://github.com/KaihangShi/Spherical-Pressure-Tensor/blob/main/hard_sphere_fluid.jpg)
+![Workflow to construct 2D energy histogram features](https://github.com/snurr-group/2D-energy-histogram/feature_engineering_scheme.tif)
 
 
 ## Requirement
