@@ -1,7 +1,7 @@
 # 2D-energy-histogram
 R implementation of machine learning using 2D energy histogram features for prediction of adsorption.<br/>
 
-![Workflow to construct 2D energy histogram features](https://github.com/snurr-group/2D-energy-histogram/feature_engineering_scheme.tif)
+![Workflow to construct 2D energy histogram features](https://github.com/snurr-group/2D-energy-histogram/blob/main/feature_engineering_scheme.jpg)
 
 
 ## Requirement
