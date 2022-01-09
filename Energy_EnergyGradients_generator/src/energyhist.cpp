@@ -1,4 +1,4 @@
-/* Energy histogram calculator */
+/* Energy & Energy Gradients calculator */
 /* ADD AUTHORS, LICENSING, ETC. */
 /* Added force calculation on 10-24-2020 */
 
