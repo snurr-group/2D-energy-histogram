@@ -1,8 +1,6 @@
 # 2D Energy Histogram
 R implementation of machine learning using 2D energy histogram features for prediction of adsorption.<br/>
-
 ![Workflow to construct 2D energy histogram features](https://github.com/snurr-group/2D-energy-histogram/blob/main/feature_engineering_scheme.jpg)
-
 
 ## Files
 This repository contains R and Python code to reproduce the results in the paper. Due to the size limit of GitHub repository, all supporting data, including CIF files and textural properties for amorphous porous materials, trained ML models, and GCMC adsorption data are stored at Zenodo space. You can acess those data at XXX. CIF files and textural properties for MOFs used in this work can be downloaded at https://mof.tech.northwestern.edu/databases.
@@ -13,8 +11,7 @@ You can reproduce the plots in the paper by simply using the code provided. For 
 >source("make_plot.R")
 >plot_parity('LASSO_Kr1bar_17x3_2dhist.rds')
 ```
-
-
+This RDS file contains all training & testing data you can play with. For multilayer perceptron (MLP) model, the actual model was saved in H5 format, all other data were still saved in RDS format.
 
 ## Reference
 
