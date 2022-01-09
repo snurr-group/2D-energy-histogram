@@ -10,8 +10,8 @@ This repository contains R and Python code to reproduce the results in the paper
 ## Usage
 You can reproduce the plots in the paper by simply using the code provided. For example, let's draw a parity plot comparing ML predictions with GCMC ground truth. You can download a trained ML model in RDS format from XXX. We pick file "LASSO_Kr1bar_17x3_2dhist.rds"; this RDS file contains a trained LASSO model using 2D energy histogram features (2dhist) for Kr adsorption at 1 bar, 273 K (Kr1bar); the 2D energy histogram in this case is a 17x3 matrix. To make plots, simply typing the following code in RStudio,
 ```
-source("make_plot.R")
-plot_parity('LASSO_Kr1bar_17x3_2dhist.rds')
+>source("make_plot.R")
+>plot_parity('LASSO_Kr1bar_17x3_2dhist.rds')
 ```
 
 
