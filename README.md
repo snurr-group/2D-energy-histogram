@@ -12,7 +12,7 @@ You can reproduce the plots in the paper by using the code provided. For example
 > source('make_plot.R')
 > plot_parity('LASSO_Kr1bar_17x3_2dhist.rds')
 ```
-The RDS file contains all training & testing data; you can acess them by typing
+The RDS file contains all training & testing data; you can access them by typing
 ```
 > source('package_verification.R')
 > data = read_rds('../../Zenodo/Trained_ML_models/LASSO_Kr1bar_17x3_2dhist.rds')
