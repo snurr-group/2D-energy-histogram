@@ -1,14 +1,13 @@
-# Energy histograms
+# C++ code to generate energy & energy gradient grids (adapted from Ben Bucior's enery grids code)
 
 ## Installation and usage
-After downloading the repository, the easiest way to set it up is by running `make init`. (after unzip the openbable folder) This step may take some time as it compiles and sets up Open Babel in local subdirectories.  After it is set up, `make grid` is sufficient for compiling energy grid C++ source code in `src`.
+After downloading this folder, the easiest way to set it up is by running `make init`. (after unzipping the "openbabel.zip".) This step may take some time as it compiles and sets up Open Babel in local subdirectories. After it is set up, `make grid` is sufficient for compiling energy grid C++ source code in `src`.
 
 Force field file needs to be set up in `src/forcefield`
 
-You can call the executable directly as `bin/energyhist my_mof.cif` which operates on a `CIF_FILES` directory hierarchy from the current working directory and also reports timing information. 
+You can call the executable directly as `bin/energyhist my_mof.cif` which operates on a `CIF_FILE` (here "my_mof.cif") from the current working directory and also reports timing information. 
 
 Output file contains five columns: X, Y, Z, Energy [K], Energy gradient [K/A]
-
 
 ## Requirements
 * cmake
