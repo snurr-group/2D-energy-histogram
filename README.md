@@ -15,7 +15,7 @@ You can reproduce the plots in the paper by using the code provided. For example
 The RDS file contains all training & testing data; you can access them by typing
 ```
 > source('package_verification.R')
-> data = read_rds('../../Zenodo/Trained_ML_models/LASSO_Kr1bar_17x3_2dhist.rds')
+> data = read_rds('LASSO_Kr1bar_17x3_2dhist.rds')
 > data$train$actu_y  # print GCMC training data
 ```
 For multilayer perceptron (MLP) model, the actual model was saved in H5 format, all other data were still saved in RDS format.
