@@ -18,7 +18,7 @@ The RDS file contains all training & testing data; you can access them by typing
 > data = read_rds('LASSO_Kr1bar_17x3_2dhist.rds')
 > data$train$actu_y  # print GCMC training data
 ```
-For multilayer perceptron (MLP) model, the actual model was saved in H5 format, all other data were still saved in RDS format.
+We have also prepared an Excel file that contains all GCMC adsorption data (available at Zenodo and SI of the paper). For multilayer perceptron (MLP) model, the actual model was saved in H5 format, all other data were still saved in RDS format.
 
 ## Reference
 If you find the code and data are useful to your project, please cite this paper: 
