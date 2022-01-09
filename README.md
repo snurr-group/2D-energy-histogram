@@ -1,5 +1,5 @@
 # 2D Energy Histogram
-R implementation of machine learning using 2D energy histogram features for prediction of adsorption. If you have any questions, please contact me at kaihangshi0@gmail.com!<br/>
+R implementation of machine learning using 2D energy histogram features for prediction of adsorption. If you have any questions, please feel free to contact me at kaihangshi0@gmail.com!<br/>
 
 ![Workflow to construct 2D energy histogram features](https://github.com/snurr-group/2D-energy-histogram/blob/main/feature_engineering_scheme.jpg)
 
