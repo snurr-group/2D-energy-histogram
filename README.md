@@ -1,5 +1,6 @@
 # 2D Energy Histogram
 R implementation of machine learning using 2D energy histogram features for prediction of adsorption.<br/>
+
 ![Workflow to construct 2D energy histogram features](https://github.com/snurr-group/2D-energy-histogram/blob/main/feature_engineering_scheme.jpg)
 
 ## Files
@@ -14,4 +15,5 @@ You can reproduce the plots in the paper by simply using the code provided. For 
 This RDS file contains all training & testing data you can play with. For multilayer perceptron (MLP) model, the actual model was saved in H5 format, all other data were still saved in RDS format.
 
 ## Reference
-
+If you find the code and data are useful to your project, please cite this paper: 
+Shi, Li, Anstine, Tang, Colina, Sholl, Siepmann, Snurr, "Two-dimensional Energy Histograms as Features for Machine Learning to Predict Adsorption in Diverse Nanoporous Materials", to be published.
