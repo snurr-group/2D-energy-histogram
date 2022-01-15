@@ -1,6 +1,6 @@
-## This folder contains essential R scripts for converting energy/energy gradient grids into a 2D energy histogram, and for training and testing ML models:
+### This folder contains essential R scripts for converting energy/energy gradient grids into a 2D energy histogram, and for training and testing ML models:
 
-### main_prep_2dhist.R       
+#### main_prep_2dhist.R       
 Main program to convert grids into 2D energy histogram in RDS format
 
 ### main_ml_2dhist.R          
