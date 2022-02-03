@@ -3,7 +3,7 @@
 ## Installation and usage
 After downloading this folder, the easiest way to set it up is by running `make init`. (after unzipping the "openbabel.zip".) This step may take some time as it compiles and sets up Open Babel in local subdirectories. After it is set up, `make grid` is sufficient for compiling energy grid C++ source code in `src`. The force field parameters for the probe molecule to evaluate energy/energy gradient grids can be set directly in the source file `energyhist.cpp` in `src`.
 
-Force field file needs to be set up in `src/forcefield`
+Force field file for the framework needs to be set up in `src/forcefield`
 
 You can call the executable directly as `bin/energyhist my_mof.cif` which operates on a `CIF_FILE` (here "my_mof.cif") from the current working directory and also reports timing information. 
 
