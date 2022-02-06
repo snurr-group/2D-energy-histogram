@@ -1,0 +1,31 @@
+SimulationType                MonteCarlo
+NumberOfCycles                30000
+NumberOfInitializationCycles  30000
+PrintEvery                    1000
+RestartFile                  no
+ContinueAfterCrash            no
+WriteBinaryRestartFileEvery 1000
+RemoveAtomNumberCodeFromLabel yes
+ChargeMethod   None
+CutOffVDW                     12.8
+Forcefield                    Local
+
+Framework 0
+FrameworkName 10041
+UnitCells 1 1 1
+HeliumVoidFraction 0
+
+ExternalTemperature 495.6
+ExternalPressure 10e5 
+
+Component 0 MoleculeName            hexane
+            MoleculeDefinition       Local
+            IdealGasRosenbluthWeight 0.0110712
+            TranslationProbability   1.0
+            RotationProbability      1.0
+            ReinsertionProbability   1.0
+            CBMCProbability          1.0
+            ReinsertionInPlaceProbability       1.0 
+            SwapProbability          1.0
+            CBCFSwaplambdaProbability      1.0
+            CreateNumberOfMolecules  0
