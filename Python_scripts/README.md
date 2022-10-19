@@ -1,7 +1,7 @@
 ## This folder contains some useful Python scripts for the project:
 
 ### LJ-energygrid.py              
-Call C++ binary for energy/energy gradient calculations on a bunch of MOF structures
+Call C++ binary for energy/energy gradient grids calculations on a bunch of MOF structures and generate "summary.txt" files that will be read by R code.
 
 ### minCell_strict.py            
 Get the minimum number of unit cells in each direction for GCMC simulations
