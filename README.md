@@ -4,7 +4,7 @@ R implementation of machine learning using 2D energy histogram features for pred
 ![Workflow to construct 2D energy histogram features](https://github.com/snurr-group/2D-energy-histogram/blob/main/feature_engineering_scheme.jpg)
 
 ## Files
-This repository contains essential code and example data to reproduce the results in the paper. The supplementary data include CIF files and textural properties for amorphous porous materials, trained ML models, and GCMC adsorption data that were used for ML training and testing are stored on Zenodo (https://doi.org/10.5281/zenodo.5481697). CIF files and textural properties for MOFs used in this work can be directly downloaded from MOFX-DB: https://mof.tech.northwestern.edu/databases.
+This repository contains essential code and example data to reproduce the results in the paper. The supplementary data including CIF files and textural properties for amorphous porous materials, trained ML models, and GCMC adsorption data that were used for ML training and testing are stored on Zenodo (https://doi.org/10.5281/zenodo.5481697). CIF files and textural properties for MOFs used in this work can be directly downloaded from MOFX-DB: https://mof.tech.northwestern.edu/databases.
 
 ## Usage
 ### Generation of 2D energy histograms
