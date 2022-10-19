@@ -1,9 +1,7 @@
 source('package_verification.R')
-runs = tuning_run("main_ml_2dhist.R",
-                  #sample = 0.5,  # only try half of the combinations of trial hyperparameters
-                  flags = list(dense1 = c(1024), 
-                               dense2 = c(1024),
-                               dense3 = c(1024),
-                               dropout1 = c(0.1,0.3,0.5),
-                               dropout2 = c(0.1,0.3,0.5)
-                                                   ))
+runs = tuning_run("main_ml_2dhist.R", flags = list(dense1 = c(128,256),
+                                                   dense2 = c(32,64,128),
+                                                   dense3 = c(32,64,128),
+                                                   dense4 = c(32,64,128),
+                                                   dropout1 = c(0.2, 0.3, 0.4),
+                                                   activ = c('relu','sigmoid'))  )

@@ -1,5 +1,5 @@
 #number of pseudo atoms
-124
+115
 #type     print   as     chem   oxidation     mass          charge     polarization     B-factor     radii     connectivity     anisotropic anisotropic-type tinker-type
 Ac_       yes     Ac     Ac     0     	      227     	    0          0     1     1     0     0     relative     0
 Ag_       yes     Ag     Ag     0     	      107.868       0          0     1     1     0     0     relative     0
@@ -116,13 +116,4 @@ CH3_sp3	  yes	  C	 C	0     	      15.03452	    0	       0     1     1     0     
 CH2_sp3	  yes	  C	 C	0     	      14.02658	    0	       0     1     1     0     0     relative	  0
 CH_sp3	  yes	  C	 C	0     	      13.01864	    0	       0     1     1     0     0     relative     0
 C_sp3	  yes	  C	 C	0     	      12.0	    0	       0     1     1     0     0     relative     0
-H_h2	  yes	  H	 H	0      	      1.00794   0.468 	       0     1     1     0     0     relative	  0
-H_com	  no      H      H	0      	      0.0      -0.936 	       0     1     1     0     0     relative	  0
-C_co2	  yes	  C  	 C	0     	      12.0      0.70   	       0     1     1     0     0     relative	  0
-O_co2	  yes	  O	 O      0     	      15.9994  -0.35  	       0     1     1     0     0     relative	  0
-N_n2	  yes     N	 N      0     	      14.0067  -0.4048 	       0     1     1     0     0     relative	  0
-N_com	  no	  N      -      0      	      0.0       0.8096 	       0     1     1     0     0     relative	  0
-Ow        yes     O    	 O      0     	      15.9994   0.0          0.0     1.0   0.5   2     0     relative     0
-Hw        yes     H    	 H      0      	      1.008     0.52         0.0     1.0   0.32  1     0     relative     0
-M         no      M    	 -      0      	      0.0      -1.04         0.0     1.0   1.00  1     0     relative     0
 

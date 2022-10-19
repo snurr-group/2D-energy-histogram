@@ -81,7 +81,7 @@ one_hot_categorical = function(vec_input) {
 
 
 # ==================== Standardize the data set =========================
-standardize_x = function(df_x) {
+standardize_x_fit = function(df_x) {
   
   # ======================================================================
   # NOTE: this function is kind of redundant for glmnet because it will standardize the x by default
@@ -92,27 +92,27 @@ standardize_x = function(df_x) {
   # Output: Return a list of standardized x data (data frame), 
   #         meanz (data frame), varz (data frame)
   # Input:
-  # df_x     - data frame of flatted 2D histogram
+  # df_x     - data frame of flatted 2D histogram (training data only)
   # ======================================================================
   
   df_x_orig = df_x
   
-  if (('top' %in% names(df_x_orig)) & (length(names(df_x_orig)) ==1)) {
+  if (('topo' %in% names(df_x_orig)) & (length(names(df_x_orig)) ==1)) {
     # only topological code
     # function 'one_hot_categorical' is defined in 'data_process.R'
-    mx_top = df_x$top %>% one_hot_categorical()
+    mx_top = df_x$topo %>% one_hot_categorical()
     # to avoid default column names starting with 'X'
     colnames(mx_top) = colnames(mx_top,do.NULL = F,prefix = 't')
     df_x_std = data.frame(mx_top)
     df_meanz = NULL
     df_varz = NULL
     
-  } else if (('top' %in% names(df_x_orig)) & (length(names(df_x_orig)) >1)) {
+  } else if (('topo' %in% names(df_x_orig)) & (length(names(df_x_orig)) >1)) {
     # topological code + other numerical features
     # function 'one_hot_categorical' is defined in 'data_process.R'
-    mx_top = df_x$top %>% one_hot_categorical()
+    mx_top = df_x$topo %>% one_hot_categorical()
     colnames(mx_top) = colnames(mx_top,do.NULL = F,prefix = 't')
-    df_x = df_x[,which( !(names(df_x) %in% c('top')))]
+    df_x = df_x[,which( !(names(df_x) %in% c('topo')))]
     df_meanz = df_x %>% summarize_all(mean)
     df_varz = df_x %>% summarize_all(sd)
     # Apply standardization procedures
@@ -137,9 +137,61 @@ standardize_x = function(df_x) {
 }
 
 
+# ============== Standardize the data set by applying known scalar ==================
+standardize_x_transform = function(df_x,ls_std) {
+  
+  # ======================================================================
+  # Input:  
+  # df_x     - testing data (data frame)
+  # ls_std   - list output from standardize_x_fit function
+  #
+  # Output: Return a list of standardized x data (data frame)
+  # ======================================================================
+  
+  df_x_orig = df_x
+  
+  df_meanz = ls_std$meanz
+  df_varz = ls_std$stdz
+  
+  if (('topo' %in% names(df_x_orig)) & (length(names(df_x_orig)) ==1)) {
+    # only topological code
+    # function 'one_hot_categorical' is defined in 'data_process.R'
+    mx_top = df_x$topo %>% one_hot_categorical()
+    # to avoid default column names starting with 'X'
+    colnames(mx_top) = colnames(mx_top,do.NULL = F,prefix = 't')
+    df_x_std = data.frame(mx_top)
+
+    
+  } else if (('topo' %in% names(df_x_orig)) & (length(names(df_x_orig)) >1)) {
+    # topological code + other numerical features
+    # function 'one_hot_categorical' is defined in 'data_process.R'
+    mx_top = df_x$topo %>% one_hot_categorical()
+    colnames(mx_top) = colnames(mx_top,do.NULL = F,prefix = 't')
+    df_x = df_x[,which( !(names(df_x) %in% c('topo')))]
+
+    # Apply standardization procedures
+    df_x_std = (df_x - df_meanz[rep(1,times=nrow(df_x)),]) / (df_varz[rep(1,times=nrow(df_x)),])
+    df_x_std = cbind(df_x_std,mx_top)
+    
+  } else {
+
+    # Apply standardization procedures
+    df_x_std = (df_x - df_meanz[rep(1,times=nrow(df_x)),]) / (df_varz[rep(1,times=nrow(df_x)),])
+    
+  }
+  
+  list(
+    std_x = df_x_std,
+    df_x = df_x_orig,
+    meanz = df_meanz,
+    stdz = df_varz
+  )
+}
+
+
 
 # =========== Normalize the data frame ==============
-minmaxscale_x = function(df_x) {
+minmaxscale_x_fit = function(df_x) {
   
   # ======================================================================
   # Output: Return a normalized data frame
@@ -147,21 +199,21 @@ minmaxscale_x = function(df_x) {
   
   df_x_orig = df_x
   
-  if (('top' %in% names(df_x_orig)) & (length(names(df_x_orig)) ==1)) {
+  if (('topo' %in% names(df_x_orig)) & (length(names(df_x_orig)) ==1)) {
     # only topological code
     # function 'one_hot_categorical' is defined in 'data_process.R'
-    mx_top = df_x$top %>% one_hot_categorical()
+    mx_top = df_x$topo %>% one_hot_categorical()
     colnames(mx_top) = colnames(mx_top,do.NULL = F,prefix = 't')
     df_x_scaled = data.frame(mx_top)
     df_min = NULL
     df_max = NULL
     
-  } else if (('top' %in% names(df_x_orig)) & (length(names(df_x_orig)) >1)) {
+  } else if (('topo' %in% names(df_x_orig)) & (length(names(df_x_orig)) >1)) {
     # topological code + other numerical features
     # function 'one_hot_categorical' is defined in 'data_process.R'
-    mx_top = df_x$top %>% one_hot_categorical()
+    mx_top = df_x$topo %>% one_hot_categorical()
     colnames(mx_top) = colnames(mx_top,do.NULL = F,prefix = 't')
-    df_x = df_x[,which( !(names(df_x) %in% c('top')))]
+    df_x = df_x[,which( !(names(df_x) %in% c('topo')))]
     # extract
     df_min = df_x %>% summarize_all(min)
     df_max = df_x %>% summarize_all(max)
@@ -175,6 +227,55 @@ minmaxscale_x = function(df_x) {
     df_min = df_x %>% summarize_all(min)
     df_max = df_x %>% summarize_all(max)
     df_dif = df_max - df_min
+    # normalized matrix
+    df_x_scaled = (df_x - df_min[rep(1,times=nrow(df_x)),]) / (df_dif[rep(1,times=nrow(df_x)),])
+    
+  }
+  
+  list(
+    norm_x = df_x_scaled,
+    df_x = df_x_orig,
+    min = df_min,
+    max = df_max
+  )
+  
+}
+
+
+# =========== Normalize the data frame ==============
+minmaxscale_x_transform = function(df_x,ls_norm) {
+  
+  # ======================================================================
+  # Output: Return a normalized data frame
+  # ======================================================================
+  
+  df_x_orig = df_x
+  
+  df_min = ls_norm$min
+  df_max = ls_norm$max
+  df_dif = df_max - df_min
+  
+  if (('topo' %in% names(df_x_orig)) & (length(names(df_x_orig)) ==1)) {
+    # only topological code
+    # function 'one_hot_categorical' is defined in 'data_process.R'
+    mx_top = df_x$topo %>% one_hot_categorical()
+    colnames(mx_top) = colnames(mx_top,do.NULL = F,prefix = 't')
+    df_x_scaled = data.frame(mx_top)
+
+    
+  } else if (('topo' %in% names(df_x_orig)) & (length(names(df_x_orig)) >1)) {
+    # topological code + other numerical features
+    # function 'one_hot_categorical' is defined in 'data_process.R'
+    mx_top = df_x$topo %>% one_hot_categorical()
+    colnames(mx_top) = colnames(mx_top,do.NULL = F,prefix = 't')
+    df_x = df_x[,which( !(names(df_x) %in% c('topo')))]
+    
+    # normalized matrix
+    df_x_scaled = (df_x - df_min[rep(1,times=nrow(df_x)),]) / (df_dif[rep(1,times=nrow(df_x)),])
+    df_x_scaled = cbind(df_x_scaled,mx_top)
+    
+  } else {
+    # numerical feature only
     # normalized matrix
     df_x_scaled = (df_x - df_min[rep(1,times=nrow(df_x)),]) / (df_dif[rep(1,times=nrow(df_x)),])
     

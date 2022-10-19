@@ -28,26 +28,26 @@ ml_model = 'mlp'
 
 # --------------- Global Parameters -----------------
 # Operational system ('win' or 'linux')
-os_current = 'win'
+os_current = 'linux'
 # setting directory based on the operational system
 if (os_current == 'win') {
   # directory to adsorbate specific folder (location of 'summary.txt', 'persimg.csv' etc)
   ads_dir = "E:/Research_data/2Dhistogram/kr1/"
   # gcmc data (and other related data) directory
-  data_dir ="C:/Users/khshi/Dropbox/Projects/2D_Energy_Histogram/code/All_data/"
+  data_dir ="../All_data/"
   # directory where all grid & json files are located
   grid_dir =  "E:/Research_data/2Dhistogram/tobdown" 
   
 } else if (os_current == 'linux') {
-  ads_dir = "../kr1/summary.txt"
+  ads_dir = "../eth4/"
   data_dir ="../big_data"
   grid_dir = "/home/kaihang/2dhist/Tobacco"
 }
 
 # gcmc file name which contains gcmc data
-gcmcname = 'gcmc_Kr_273K_1Bar_cm3cm3.txt'
+gcmcname = 'gcmc_Ethane_298K_4Bar_cm3cm3.txt'
 # file name for processed 2d histogram 
-tdhistname = "tdhist_Kr_norm_17x3_0.5A.rds"  
+tdhistname = "tdhist_CH3_norm_14x5_0.5A.rds"  
 # output name for R-style save file
 output = 'test'  # 'UMAP_hex0.02_extrafeatures'
 
@@ -56,10 +56,10 @@ output = 'test'  # 'UMAP_hex0.02_extrafeatures'
 #          'persimg_2d' (persistent image of 2D homology)
 #          'persimg_1d' (persistent image of 1D homology)
 #          'textural'  (baseline textural features, including void fraction, pld, lcd etc.)
-main_features = c('2dhist')
+main_features = c('textural')
 # textural features
-# Options: 'vf', 'lcd', 'pld', 'sav' (volumetric surface area), 'sag' (gravimetric ..), 'top' (topology codes)
-tex_features = c('vf','lcd','pld','sav')
+# Options: 'vf', 'lcd', 'pld', 'sa_tot_m2cm3', 'sa_tot_m2g', 'topo'
+tex_features = c('vf','lcd','pld','sa_tot_m2cm3','sa_tot_m2g')
 # Method to scale ONLY 'persimg_2d' and 'struc' features 
 # options: 'standardize', 'normalize', 'none'
 scaler = 'normalize'
@@ -70,8 +70,7 @@ scaler = 'normalize'
 meancut = 0
 stdcut = 0
 
-# set random seed for reproducibility (5, 11, 440, 738, 800, 9096, 1767, 1942, 5494, 5453)
-# We will report parity plot for random seed of 5 only
+# set random seed for reproducibility 
 random_seed = 5
 
 # Plot learning curve? 
@@ -93,7 +92,7 @@ DEFAULT_ALPHA = 1
 
 # ------- Random Forest or Extra Tree -------
 # number of trees to grow
-n_tree = 1000
+n_tree = 500
 # minimum sample size in the leaf node, default = 5 in RF
 nsample_leafnode = 5
 # if perform parameter tuning for number of random cuts (for extra trees, R version only)
@@ -178,11 +177,22 @@ if (ml_model %in% c('lr','rf','et_R','et_sk','xgb','umap')) {
                          nonzero_load = FALSE,
                          byrow = FALSE)
   
+  # extract number of rows and columns of 2D histogram matrix for later conversion use
+  hist_nrow = ls_xy$hist_nrow
+  hist_ncol = ls_xy$hist_ncol
+  
+  # extract coordinates for heatmap plotting
+  ener_coord = ls_xy$xcoord
+  norm_coord = ls_xy$ycoord
+  
+  
+  
   # use 2D histogram as features
   if ('2dhist' %in% main_features) {
     
     # since we already read in gcmc, we exclude loading here
     df_hist_no_loading = dplyr::select(ls_xy$df_xy,-c(loading))
+    
     # dataframe with 2dhist and gcmc loading
     df_joint = df_joint %>% left_join(df_hist_no_loading, by = "id")
     
@@ -190,16 +200,22 @@ if (ml_model %in% c('lr','rf','et_R','et_sk','xgb','umap')) {
     df_histonly = df_hist_no_loading %>% dplyr::select(.,-c(id))
     
     
-    #########################################
-    # Normalize/Standardize 2D histogram (results show this step is redundant)
-    ########################################
-    # ls_x = remove_cols_x(df_joint,meancut,stdcut)
-    # df_joint = ls_x$x
-    # # normalize to [0,1]
-    # ls_norm = df_joint %>% dplyr::select(.,-c(id,loading)) %>% standardize_x()
-    # # combine 
-    # df_joint = ls_norm$std_x %>% cbind(.,df_joint %>% dplyr::select(.,c(id,loading)))
-    #########################################
+  }
+  
+  
+  # read in 1D persistent image features
+  if ('persimg_1d' %in% main_features) {
+    
+    # function defined in read_files.R
+    df_persimg1 = read_pers_image(file.path(ads_dir,'persimg_1D_all.csv'))
+    
+    # feature processing (e.g., remove zero variance column etc)
+    # consistent for both training/testing set, function defined in 'data_process.R'
+    #ls_x = remove_cols_x(df_persimg,meancut,stdcut)
+    #df_persimg = ls_x$x
+    
+    # join to the main data frame
+    df_joint = df_joint %>% left_join(df_persimg1, by = "id")
   }
 
   
@@ -207,76 +223,15 @@ if (ml_model %in% c('lr','rf','et_R','et_sk','xgb','umap')) {
   if ('persimg_2d' %in% main_features) {
     
     # function defined in read_files.R
-    df_persimg = read_pers_image(file.path(ads_dir,'persimg_2D_all.csv'))
+    df_persimg2 = read_pers_image(file.path(ads_dir,'persimg_2D_all.csv'))
     
     # feature processing (e.g., remove zero variance column etc)
     # consistent for both training/testing set, function defined in 'data_process.R'
-    ls_x = remove_cols_x(df_persimg,meancut,stdcut)
-    df_persimg = ls_x$x
+    # ls_x = remove_cols_x(df_persimg,meancut,stdcut)
+    # df_persimg = ls_x$x
     
-    # feature processing 
-    if (scaler == 'standardize') {
-      # standardize with zero mean and unit variance
-      ls_std = df_persimg %>% dplyr::select(.,-c(id)) %>% standardize_x()
-      # combine standardized extra features with id
-      df_persimg_std = ls_std$std_x %>% cbind(., df_persimg %>% dplyr::select(.,c(id)))
-      # join data frame
-      df_joint = df_joint %>% left_join(df_persimg_std, by = "id")
-      
-    } else if (scaler == 'normalize'){
-      # normalize to [0,1]
-      ls_norm = df_persimg %>% dplyr::select(.,-c(id)) %>% minmaxscale_x()
-      # combine 
-      df_persimg_norm = ls_norm$norm_x %>% cbind(.,df_persimg %>% dplyr::select(.,c(id)))
-      # join data frame
-      df_joint = df_joint %>% left_join(df_persimg_norm, by = "id")
-      
-    } else if (scaler == 'none') {
-      # retain original value
-      df_joint = df_joint %>% left_join(df_persimg, by = "id")
-      
-    } else {
-      stop("ERROR: invalid option for 'scaler' variable!!")
-      
-    }
-  }
-  
-  # read in 1D persistent image features
-  if ('persimg_1d' %in% main_features) {
-    
-    # function defined in read_files.R
-    df_persimg = read_pers_image(file.path(ads_dir,'persimg_1D_all.csv'))
-    
-    # feature processing (e.g., remove zero variance column etc)
-    # consistent for both training/testing set, function defined in 'data_process.R'
-    ls_x = remove_cols_x(df_persimg,meancut,stdcut)
-    df_persimg = ls_x$x
-    
-    # feature processing 
-    if (scaler == 'standardize') {
-      # standardize with zero mean and unit variance
-      ls_std = df_persimg %>% dplyr::select(.,-c(id)) %>% standardize_x()
-      # combine standardized extra features with id
-      df_persimg_std = ls_std$std_x %>% cbind(., df_persimg %>% dplyr::select(.,c(id)))
-      # join data frame
-      df_joint = df_joint %>% left_join(df_persimg_std, by = "id")
-      
-    } else if (scaler == 'normalize'){
-      # normalize to [0,1]
-      ls_norm = df_persimg %>% dplyr::select(.,-c(id)) %>% minmaxscale_x()
-      # combine 
-      df_persimg_norm = ls_norm$norm_x %>% cbind(.,df_persimg %>% dplyr::select(.,c(id)))
-      # join data frame
-      df_joint = df_joint %>% left_join(df_persimg_norm, by = "id")
-      
-    } else if (scaler == 'none') {
-      # retain original value
-      df_joint = df_joint %>% left_join(df_persimg, by = "id")
-      
-    } else {
-      stop("ERROR: invalid option for 'scaler' variable!!")
-      
-    }
+    # join data frame
+    df_joint = df_joint %>% left_join(df_persimg2, by = "id")
   }
 
   
@@ -293,61 +248,58 @@ if (ml_model %in% c('lr','rf','et_R','et_sk','xgb','umap')) {
     df_texprop = read_csv_texprop(os = os_current,
                                   extra_features = tex_features)
     
-    # feature processing 
-    if (scaler == 'standardize') {
-      # standardize with zero mean and unit variance
-      ls_std = df_texprop %>% dplyr::select(.,-c(id)) %>% standardize_x()
-      # combine standardized extra features with id
-      df_std = ls_std$std_x %>% cbind(., df_texprop %>% dplyr::select(.,c(id)))
-      # join data frame
-      df_joint = df_joint %>% left_join(df_std, by = "id")
-      
-    } else if (scaler == 'normalize'){
-      # normalize to [0,1]
-      ls_norm = df_texprop %>% dplyr::select(.,-c(id)) %>% minmaxscale_x()
-      # combine 
-      df_norm = ls_norm$norm_x %>% cbind(.,df_texprop %>% dplyr::select(.,c(id)))
-      # join data frame
-      df_joint = df_joint %>% left_join(df_norm, by = "id")
-      
-    } else if (scaler == 'none') {
-      # retain original value
-      df_joint = df_joint %>% left_join(df_texprop, by = "id")
-      
-    } else {
-      stop("ERROR: invalid option for 'scaler' variable!!")
-      
-    }
+    # join to the main data frame
+    df_joint = df_joint %>% left_join(df_texprop, by = "id")
   }
 
 
   # training data
-  df_x_train = dplyr::filter(df_joint, df_joint$id %in% vec_trainid) %>% dplyr::select(.,-c(id,loading))
+  df_x_train_original = dplyr::filter(df_joint, df_joint$id %in% vec_trainid) %>% dplyr::select(.,-c(id,loading))
   vec_y_train = dplyr::filter(df_joint, df_joint$id %in% vec_trainid) %>% .$loading
   trainid = dplyr::filter(df_joint, df_joint$id %in% vec_trainid) %>% .$id
   
   # testing data
-  df_x_test = dplyr::filter(df_joint, df_joint$id %in% vec_testid) %>% dplyr::select(.,-c(id,loading))
+  df_x_test_original = dplyr::filter(df_joint, df_joint$id %in% vec_testid) %>% dplyr::select(.,-c(id,loading))
   vec_y_test = dplyr::filter(df_joint, df_joint$id %in% vec_testid) %>% .$loading
   testid = dplyr::filter(df_joint, df_joint$id %in% vec_testid) %>% .$id
   
-  # extract number of rows and columns of 2D histogram matrix for later conversion use
-  hist_nrow = ls_xy$hist_nrow
-  hist_ncol = ls_xy$hist_ncol
-  
-  # extract coordinates for heatmap plotting
-  ener_coord = ls_xy$xcoord
-  norm_coord = ls_xy$ycoord
   
   
-  #################################################
-  # Only retain points that satisfy certain criteria 
-  # to test pre-trained model on HCPolymers
-  #################################################
-  #trainid = trainid[vec_y_train<20]
-  #df_x_train = df_x_train[vec_y_train<20,]
-  #vec_y_train = vec_y_train[vec_y_train<20]
-  ################################################
+  # feature scaling
+  if (scaler == 'standardize') {
+    
+    # standardize with zero mean and unit variance, learn from training data only
+    ls_std_train = standardize_x_fit(df_x_train_original)
+    # standardized feature set for training data
+    df_x_train = ls_std_train$std_x 
+    
+    # apply scalar to the testing data
+    ls_std_test = standardize_x_transform(df_x_test_original,ls_std_train)
+    df_x_test = ls_std_test$std_x
+    
+    
+  } else if (scaler == 'normalize'){
+    
+    # normalize to [0,1]
+    ls_norm_train = minmaxscale_x_fit(df_x_train_original)
+    df_x_train  = ls_norm_train$norm_x
+    # apply scalar to the testing data set
+    ls_norm_test = minmaxscale_x_transform(df_x_test_original,ls_norm_train)
+    df_x_test = ls_norm_test$norm_x
+    
+    
+  } else if (scaler == 'none') {
+    
+    # retain original value
+    df_x_train = df_x_train_original
+    df_x_test  = df_x_test_original
+    
+  } else {
+    stop("ERROR: invalid option for 'scaler' variable!!")
+    
+  }
+  
+
   
   
   
@@ -367,20 +319,21 @@ if (ml_model %in% c('lr','rf','et_R','et_sk','xgb','umap')) {
   # prepare gcmc file directory
   gcmc_file = file.path(data_dir,gcmcname)
   
-  # read 2D histogram into array matrix format
+  # always first read 2D histogram data 
   # function defined in read_files.R
   ls_xy = read_hist_gcmc_mx(hist_path = grid_dir,
                             tdhistname = tdhistname,
                             gcmc_file = gcmc_file,
                             idset = vec_allid)
   # extract data
-  ary_x = ls_xy$x
+  ary_x_2dhist = ls_xy$x
   mx_y = ls_xy$y
   df_id = ls_xy$df_id
   hist_nrow = ls_xy$hist_nrow
   hist_ncol = ls_xy$hist_ncol
   # add a sequence id column 
   df_id = mutate(df_id,seq=c(1:nrow(df_id)))
+  
   
   # feature processing
   if (ml_model %in% c('cnn')) {
@@ -409,38 +362,36 @@ if (ml_model %in% c('lr','rf','et_R','et_sk','xgb','umap')) {
     
   } else if (ml_model %in% c('mlp','gs')){
     
-    # total number of features 
-    n_dim = hist_nrow*hist_ncol
+    # initialize feature array
+    ary_x = array(numeric(),dim = c(nrow(ary_x_2dhist),0)) 
     
-    # reshape the array data (flatten)
-    ary_x = tensorflow::array_reshape(ary_x, c(nrow(ary_x),n_dim))
     
-    # append (extra) textural features
+    # use 2D histogram as features
+    if ('2dhist' %in% main_features) {
+      
+      # total number of features 
+      n_dim = hist_nrow*hist_ncol
+    
+      # reshape the array data (flatten)
+      ary_x = tensorflow::array_reshape(ary_x_2dhist, c(nrow(ary_x_2dhist),n_dim)) %>% cbind(ary_x)
+      
+    }
+    
+
+    # textural features
     if ( ('textural' %in% main_features) & (!is.null(tex_features)) ) {
       
-      # read extra features
+      # read textural data
       # function defined in 'read_files.R'
       df_texprop_sel = read_csv_texprop(os_current,tex_features)
       
-      # add textural properties to the data frame
+      # filter out useful textural properties 
       df_texprop_sel = df_id %>% left_join(df_texprop_sel, by="id")
-     
-      # normalize/standardize extra features
-      if (scaler == 'standardize') {
-        # standardize to have zero mean and unit variance
-        ls_std = standardize_x(df_texprop_sel)
-        df_texprop_sel = ls_std$std_x
-        
-      } else if (scaler == 'normalize') {
-        # normalize to [0,1]
-        ls_norm = minmaxscale_x(df_texprop_sel)
-        df_texprop_sel = ls_norm$norm_x
-      } 
+
       
       # extract names for extra features (including names for one-hot part)
       vec_colnames = colnames(df_texprop_sel)
       vec_featurenames = vec_colnames[!vec_colnames %in% c('id','seq')]
-      
       
       # add extra features into the array
       for (icol in vec_featurenames) {
@@ -450,32 +401,57 @@ if (ml_model %in% c('lr','rf','et_R','et_sk','xgb','umap')) {
       
     } 
     
-
-    # Create polymonial features while preserving original ones (TODO)
-    # ary_x_train = polyfeatures_array4dnn(ary_x_train,11)
-    # ary_x_test = polyfeatures_array4dnn(ary_x_test,11)
-    
     # training data
     vec_seq_train = dplyr::filter(df_id, df_id$id %in% vec_trainid) %>% .$seq
-    ary_x_train = ary_x[vec_seq_train,]
+    ary_x_train_original = ary_x[vec_seq_train,]
     mx_y_train = matrix(mx_y[vec_seq_train,])
     trainid = dplyr::filter(df_id, df_id$id %in% vec_trainid) %>% .$id
     
+    
     # testing data
     vec_seq_test = dplyr::filter(df_id, df_id$id %in% vec_testid) %>% .$seq
-    ary_x_test = ary_x[vec_seq_test,]
+    ary_x_test_original = ary_x[vec_seq_test,]
     mx_y_test = matrix(mx_y[vec_seq_test,])
     testid = dplyr::filter(df_id, df_id$id %in% vec_testid) %>% .$id
     
     
-    #################################################
-    # Only retain points that satisfy certain criteria 
-    # to test pre-trained model on HCPolymers
-    #################################################
-    # trainid = trainid[mx_y_train<150]
-    # ary_x_train = ary_x_train[mx_y_train<150,]
-    # mx_y_train = matrix(mx_y_train[mx_y_train<150])
-    ################################################
+
+    # feature scaling
+    if (scaler == 'standardize') {
+      
+      # standardize with zero mean and unit variance, learn from training data only
+      ls_std_train = standardize_x_fit(data.frame(ary_x_train_original))
+      # standardized feature set for training data
+      ary_x_train = data.matrix(ls_std_train$std_x) 
+      
+      # apply scalar to the testing data
+      ls_std_test = standardize_x_transform(data.frame(ary_x_test_original),ls_std_train)
+      ary_x_test = data.matrix(ls_std_test$std_x)
+      
+      
+    } else if (scaler == 'normalize'){
+      
+      # normalize to [0,1]
+      ls_norm_train = minmaxscale_x_fit(data.frame(ary_x_train_original))
+      ary_x_train  = data.matrix(ls_norm_train$norm_x)
+      # apply scalar to the testing data set
+      ls_norm_test = minmaxscale_x_transform(data.frame(ary_x_test_original),ls_norm_train)
+      ary_x_test = data.matrix(ls_norm_test$norm_x)
+      
+      
+    } else if (scaler == 'none') {
+      
+      # retain original value
+      ary_x_train = ary_x_train_original
+      ary_x_test  = ary_x_test_original
+      
+    } else {
+      stop("ERROR: invalid option for 'scaler' variable!!")
+      
+    }
+    
+    
+
     
   } 
   
@@ -718,7 +694,7 @@ if (ml_model == 'lr') {
   
 } else if (ml_model == 'mlp') {
   
-  # ==================== Deep Neural Nets =========================
+  # ==================== Neural Nets =========================
   # set random seed
   tensorflow::tf$random$set_seed(random_seed)
   
@@ -728,12 +704,11 @@ if (ml_model == 'lr') {
   if (tunehyperpara) {
     
     # define tunning flag
-    FLAGS = flags(flag_integer('dense1',512),
-                  flag_integer('dense2',512),
-                  flag_integer('dense3',512),
+    FLAGS = flags(flag_integer('dense1',50),
+                  flag_integer('dense2',50),
+                  flag_integer('dense3',50),
                   flag_integer('dense4',50),
                   flag_numeric('dropout1',0.1),
-                  flag_numeric('dropout2',0.1),
                   flag_string('activ','relu'))
     
     
@@ -743,7 +718,7 @@ if (ml_model == 'lr') {
       layer_dense(units = FLAGS$dense1, activation = FLAGS$activ, input_shape = input_dim) %>%
       layer_dropout(rate = FLAGS$dropout1) %>%
       layer_dense(units = FLAGS$dense2, activation = FLAGS$activ) %>%
-      layer_dropout(rate = FLAGS$dropout2) %>%
+      # layer_dropout(rate = FLAGS$dropout2) %>%
       layer_dense(units = FLAGS$dense3, activation = FLAGS$activ) %>%
       layer_dense(units = FLAGS$dense4, activation = FLAGS$activ) %>%
       #layer_dropout(rate = 0.5) %>%
@@ -778,9 +753,9 @@ if (ml_model == 'lr') {
     mlp_mod = keras_model_sequential() %>%
       
       layer_dense(units = 256, activation = 'relu', input_shape = input_dim) %>%
-      layer_dropout(rate = 0.2) %>%
-      layer_dense(units = 64, activation = 'relu') %>%
-      layer_dense(units = 64, activation = 'relu') %>%
+      layer_dropout(rate = 0.4) %>%
+      layer_dense(units = 128, activation = 'relu') %>%
+      layer_dense(units = 32, activation = 'relu') %>%
       # layer_dropout(rate = 0.1) %>%
       layer_dense(units = 32, activation = 'relu') %>%
       # layer_dense(units = 512, activation = 'relu') %>%

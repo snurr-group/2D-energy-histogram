@@ -1,1 +1,0 @@
-This folder contains trained ML models that can be read by R code provided in this repo. 

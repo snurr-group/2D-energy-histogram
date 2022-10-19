@@ -461,7 +461,7 @@ read_csv_texprop = function(os = 'win',extra_features) {
     csv_file = 'C:/Users/khshi/Dropbox/Projects/2D_Energy_Histogram/code/All_data/textural_properties/textprop_tobacco_consistentnew.csv'
     
   } else if (os == 'linux') {
-    csv_file = '/home/kaihang/2dhist/energy-histograms/python_R/big_data/textprop_tobacco.csv'
+    csv_file = '/home/kaihang/2dhist/energy-histograms/python_R/big_data/textprop_tobacco_consistentnew.csv'
   }
 
   # read in textural properties  
@@ -551,6 +551,9 @@ read_pers_image = function(csv_file) {
   
   # change first column name to id
   names(df_persimg)[1]='id'
+  
+  # convert id to character type
+  df_persimg$id = as.character(df_persimg$id)
 
   # return dataframe
   df_persimg
