@@ -31,4 +31,4 @@ To use the trained ML model on new data sets, R code "main_model_test.R" under "
 
 ## Reference
 If you find the code and data are useful to your project, please cite this paper: 
-Shi, Li, Anstine, Tang, Colina, Sholl, Siepmann, Snurr, "Two-dimensional Energy Histograms as Features for Machine Learning to Predict Adsorption in Diverse Nanoporous Materials", to be published.
+Shi, Li, Anstine, Tang, Colina, Sholl, Siepmann, Snurr, "Two-dimensional Energy Histograms as Features for Machine Learning to Predict Adsorption in Diverse Nanoporous Materials", J. Chem. Theory Comput. 2023. [DOI: 10.1021/acs.jctc.2c00798](https://pubs.acs.org/doi/full/10.1021/acs.jctc.2c00798) 
