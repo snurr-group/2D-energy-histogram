@@ -131,7 +131,8 @@ int main(int argc, char* argv[])
 	const double rcut2 = rcut * rcut;
 	const double del = 0.005;  // value used for approximating Delta function
     char const *output_name = "ener_grad_Xe_norm_1A.txt";  // file name for output energy/gradient grid
-  	char const *atom_label_type = "label" ;  // name read from CIF: "symbol" or "label"
+  	char const *atom_label_type = "label" ;  // name read from CIF: "symbol" or "label". Choose "symbol" if all, say, carbon atoms have the same force field parameters;
+						// if "C1" and "C2", for example, do not have the same force field parameters, choose "label" here, and specify "C1", "C2" etc. force field parameters in FF_FILE.
 
 	std::string FF_FILE = LOCAL_OB_DATADIR;
 	FF_FILE += "/../forcefield/APM/force_field_mixing_rules.def";
